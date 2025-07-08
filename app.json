@@ -17,7 +17,7 @@
         "backgroundColor": "#ffffff"
       },
       "edgeToEdgeEnabled": true,
-      "package": "com.anonymous.HEALTH_SCOPE"
+      "package": "com.kesar.HealthScope"
     },
     "web": {
       "bundler": "metro",
@@ -39,6 +39,11 @@
     ],
     "experiments": {
       "typedRoutes": true
+    },
+    "extra": {
+      "eas": {
+        "projectId": "e31c3424-2118-466d-9774-344ec277d963"
+      }
     }
   }
 }
