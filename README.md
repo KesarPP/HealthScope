@@ -1,27 +1,18 @@
-# 🩺 HealthScope – AI-Powered Personal Health Companion
+# HealthScope Python Modules
 
-HealthScope is a cross-platform mobile application built with React Native. It helps users monitor their health, track daily health tasks, upload medical reports, receive personalized diet suggestions, and interact with an AI-powered chatbot.
+This folder contains AI model and backend logic used in HealthScope.
 
-## 🚀 Features
+## Structure
 
-- 📄 Upload and analyze health reports (PDFs)
-- 🍎 Personalized diet plans based on health conditions
-- ⏰ Appointment tracking with reminders
-- 🤖 AI Health Chatbot 
-- 🧘 Daily wellness task suggestions
-- 🔐 Firebase Authentication (Email/Password)
-- ☁️ Firestore for health data storage
-- 🔄 Multilingual support (English, Hindi, Marathi)
-  
+- `AI/` – CNN model to detect eye diseases (Normal, Cataract, etc.)
+- `backend/`
+  - `health_comparator.py` – Compares old and new health report metrics.
+  - `diet_recommender.py` – Recommends diets based on conditions.
+  - `report_analyzer.py` – Creates prompt for AI chatbot to suggest remedies.
 
----
+## Requirements
 
-## 📱 Tech Stack
-
-- React Native CLI
-- Use of Pre defined models
-- Firebase Auth & Firestore
-- React Navigation
-- TypeScript
-- Firebase Cloud Messaging 
-
+- TensorFlow / Keras
+- OpenCV
+- NumPy
+- Python 3.10+
