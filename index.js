@@ -1,9 +1,12 @@
-/**
- * @format
- */
-
-import { AppRegistry } from 'react-native';
+import React from 'react';
+import ReactDOM from 'react-dom/client';
 import App from './App';
-import { name as appName } from './app.json';
 
-AppRegistry.registerComponent(appName, () => App);
+// React 18+ uses createRoot
+const root = ReactDOM.createRoot(document.getElementById('root'));
+
+root.render(
+  <React.StrictMode>
+    <App />
+  </React.StrictMode>
+);
