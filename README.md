@@ -36,3 +36,6 @@ HealthScope is an intelligent health assistant web application that helps users 
 ```bash
 git clone https://github.com/yourusername/healthscope.git
 cd healthscope
+---
+PPT
+https://www.canva.com/design/DAGqyaS-IjE/U4oVEZzjMEION2Orao_WFA/edit?utm_content=DAGqyaS-IjE&utm_campaign=designshare&utm_medium=link2&utm_source=sharebutton
