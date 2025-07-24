@@ -1,0 +1,44 @@
+Here's a well-structured prompt designed for generating the "HealthScope" web application:
+
+---
+
+**Prompt for HealthScope Web Application Generation**
+
+"Please design and implement a complete, single-page React web application called 'HealthScope.' The application should be fully responsive, visually appealing, and styled exclusively with Tailwind CSS.
+
+The core purpose of HealthScope is to provide users with a comprehensive health and wellness management platform. It must include the following key features:
+
+1.  **User Authentication (Placeholder):**
+    * Implement a basic "Sign Up" and "Login" section. For this iteration, these can be functional placeholders (e.g., clicking "Sign Up" or "Login" simply navigates to the main dashboard without actual backend authentication). The UI should be present.
+
+2.  **Vitals Tracking and AI-Powered Solutions:**
+    * Create a dedicated section where users can input common vital signs (e.g., Heart Rate, Blood Pressure, Body Temperature, Oxygen Saturation).
+    * Upon submission of vital signs, use the `gemini-2.0-flash` model via the Gemini API to generate a brief, general solution or suggestion based on the entered readings. For example, if blood pressure is high, suggest consulting a doctor or simple relaxation techniques. The API key should be an empty string (`const apiKey = ""`).
+    * Display the entered vitals and the AI-generated suggestion clearly.
+
+3.  **Mood Tracking and Personalized Activities/Yoga/Exercises:**
+    * Include a section where users can select or input their current mood (e.g., happy, stressed, tired, energetic).
+    * Based on the selected mood, use the `gemini-2.0-flash` model via the Gemini API to suggest relevant exercises, yoga poses, or general activities. For example, for "stressed," suggest gentle yoga or meditation; for "energetic," suggest a brisk walk or high-intensity exercise. The API key should be an empty string (`const apiKey = ""`).
+    * Display the selected mood and the AI-generated activity suggestions.
+
+4.  **Emergency Contacts:**
+    * Create a static section that prominently displays a list of common emergency contact numbers (e.g., Police, Ambulance, Fire, a generic "Family Contact"). These can be hardcoded within the component.
+
+5.  **Integrated AI Chatbot - 'Sakhi':**
+    * Implement an interactive AI chatbot named 'Sakhi.'
+    * Users should be able to type questions into a text input field.
+    * Use the `gemini-2.0-flash` model via the Gemini API to generate responses to user queries. The API key should be an empty string (`const apiKey = ""`).
+    * Display the chat history, showing both user questions and Sakhi's responses.
+    * Include a clear loading indicator while Sakhi is generating a response.
+
+**General Requirements:**
+
+* **React Structure:** The entire application should be contained within a single `App` component, using functional components and hooks.
+* **Styling:** Use Tailwind CSS exclusively for all styling. Ensure a modern, clean, and intuitive UI.
+* **Responsiveness:** The layout must be fully responsive and adapt seamlessly to various screen sizes (mobile, tablet, desktop) without horizontal scrolling. Use Tailwind's responsive prefixes.
+* **Error Handling:** Implement basic `try-catch` blocks for API calls to handle potential errors gracefully (e.g., display a "Failed to fetch" message).
+* **User Experience:** Focus on a smooth and engaging user experience.
+* **No `alert()` or `confirm()`:** Use custom UI elements (e.g., modal dialogs or in-line messages) for any user feedback or confirmations.
+* **Comments:** Provide extensive comments throughout the code to explain logic, component structure, and API integration.
+
+Your output should be a single, complete React code block within an immersive tag, ready to be run."
