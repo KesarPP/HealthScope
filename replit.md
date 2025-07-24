@@ -7,6 +7,7 @@ HealthScope is a comprehensive health and wellness management platform built as 
 ## User Preferences
 
 Preferred communication style: Simple, everyday language.
+Dashboard interface: User requested organized buttons on dashboard instead of direct display and report generation functionality after vitals examination.
 
 ## System Architecture
 
@@ -39,9 +40,12 @@ Preferred communication style: Simple, everyday language.
 4. **AI Chatbot (Sakhi)**: Interactive health assistant powered by Gemini AI
 
 ### User Interface Components
-- Responsive single-page application design
+- Responsive single-page application design with dashboard-based navigation
 - Mobile-first approach with Tailwind CSS breakpoints
 - Component-based architecture using shadcn/ui
+- Conditional section rendering based on active navigation state
+- Organized dashboard with action buttons for each feature section
+- Health report generation and download functionality
 - Form handling with proper validation and error states
 - Loading states and error handling for AI interactions
 
