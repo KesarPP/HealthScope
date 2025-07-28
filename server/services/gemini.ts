@@ -1,7 +1,11 @@
 import { GoogleGenAI } from "@google/genai";
 
-// Initialize Gemini AI with API key from environment or empty string fallback
-const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY || "" });
+// ⚠️ Best practice: Store API keys in env files, not directly in code.
+const ai = new GoogleGenAI({
+  apiKey: "AIzaSyB5RWEO1nyqbjkexpDbY-alL22LEMsj0aA",
+});
+
+// ---------------- Types ----------------
 
 export interface VitalsData {
   heartRate?: number;
@@ -16,101 +20,157 @@ export interface MoodData {
   description?: string;
 }
 
+export interface Hospital {
+  name: string;
+  address: string;
+  phone?: string;
+  distance: string;
+  type: string;
+}
+
+// ---------------- Vitals Analysis ----------------
+
 export async function analyzeVitals(vitals: VitalsData): Promise<string> {
   try {
     const vitalsText = Object.entries(vitals)
-      .filter(([_, value]) => value !== undefined && value !== null)
+      .filter(([, value]) => value !== undefined && value !== null)
       .map(([key, value]) => {
         switch (key) {
-          case 'heartRate':
+          case "heartRate":
             return `Heart Rate: ${value} BPM`;
-          case 'systolicBP':
-            return `Systolic Blood Pressure: ${value} mmHg`;
-          case 'diastolicBP':
-            return `Diastolic Blood Pressure: ${value} mmHg`;
-          case 'temperature':
-            return `Body Temperature: ${value}°F`;
-          case 'oxygenSaturation':
+          case "systolicBP":
+            return `Systolic BP: ${value} mmHg`;
+          case "diastolicBP":
+            return `Diastolic BP: ${value} mmHg`;
+          case "temperature":
+            return `Temperature: ${value}°F`;
+          case "oxygenSaturation":
             return `Oxygen Saturation: ${value}%`;
           default:
             return `${key}: ${value}`;
         }
       })
-      .join(', ');
+      .join(", ");
 
-    const prompt = `As a health AI assistant, analyze these vital signs and provide brief, general health suggestions: ${vitalsText}. 
-    
-    Please provide:
-    1. A brief assessment of whether these readings appear within normal ranges
-    2. General health suggestions or lifestyle recommendations
-    3. Any recommendations to consult with healthcare professionals if needed
-    
-    Keep the response concise, helpful, and emphasize that this is general information, not medical diagnosis.`;
+    const prompt = `Analyze the following vitals and provide:
+1. A brief assessment of whether these readings are within normal range.
+2. General health or lifestyle suggestions.
+3. A disclaimer that this is not a diagnosis.
+
+Vitals: ${vitalsText}`;
 
     const response = await ai.models.generateContent({
       model: "gemini-2.0-flash",
       contents: prompt,
     });
 
-    return response.text || "Unable to analyze vitals at this time. Please try again.";
+    return response.text?.trim() || "Unable to analyze vitals at this time.";
   } catch (error) {
-    console.error("Error analyzing vitals:", error);
-    throw new Error("Failed to analyze vital signs. Please check your connection and try again.");
+    console.error("analyzeVitals error:", error);
+    throw new Error("Failed to analyze vitals. Please try again.");
   }
 }
+
+// ---------------- Mood Activity Suggestion ----------------
 
 export async function recommendActivities(moodData: MoodData): Promise<string> {
   try {
-    const prompt = `As a wellness AI assistant, suggest personalized activities, exercises, or yoga poses based on this mood: "${moodData.mood}"${moodData.description ? ` with additional context: "${moodData.description}"` : ''}.
-    
-    Please provide 3-4 specific, actionable suggestions that would be appropriate for someone feeling this way. Include:
-    1. Physical activities or exercises
-    2. Mindfulness or relaxation techniques
-    3. Social or creative activities if appropriate
-    
-    Keep suggestions practical, positive, and focused on improving wellbeing.`;
+    const context = moodData.description
+      ? ` with the note: "${moodData.description}"`
+      : "";
+
+    const prompt = `Suggest 3–4 wellbeing activities for someone feeling "${moodData.mood}"${context}. Include:
+1. A physical activity or light exercise
+2. A mindfulness or calming practice
+3. A social/creative engagement idea (if applicable)
+
+Suggestions should be actionable and encouraging.`;
 
     const response = await ai.models.generateContent({
       model: "gemini-2.0-flash",
       contents: prompt,
     });
 
-    return response.text || "Unable to generate activity recommendations at this time. Please try again.";
+    return response.text?.trim() || "Unable to recommend activities at this time.";
   } catch (error) {
-    console.error("Error recommending activities:", error);
-    throw new Error("Failed to generate activity recommendations. Please check your connection and try again.");
+    console.error("recommendActivities error:", error);
+    throw new Error("Failed to generate activity suggestions.");
   }
 }
 
-export async function chatWithSakhi(message: string, chatHistory?: Array<{role: string, content: string}>): Promise<string> {
+// ---------------- Chat with Sakhi ----------------
+
+interface ChatMessage {
+  role: "user" | "assistant";
+  content: string;
+}
+
+export async function chatWithSakhi(
+  message: string,
+  chatHistory?: ChatMessage[]
+): Promise<string> {
   try {
-    let contextPrompt = `You are Sakhi, a friendly and knowledgeable AI health assistant. You provide helpful, accurate health and wellness information while emphasizing that you're not a replacement for professional medical advice. Keep responses conversational, supportive, and informative.
+    const historyText = chatHistory
+      ?.slice(-6)
+      .map((msg) => `${msg.role}: ${msg.content}`)
+      .join("\n");
 
-User question: "${message}"`;
-
-    if (chatHistory && chatHistory.length > 0) {
-      const historyText = chatHistory
-        .slice(-6) // Keep last 6 messages for context
-        .map(msg => `${msg.role}: ${msg.content}`)
-        .join('\n');
-      
-      contextPrompt = `You are Sakhi, a friendly and knowledgeable AI health assistant. Here's our recent conversation:
+    const prompt = historyText
+      ? `You are Sakhi, a helpful AI health assistant. Here's recent context:
 
 ${historyText}
 
-User question: "${message}"
+Now the user says: "${message}"`
+      : `You are Sakhi, a warm, informative AI health assistant. Answer the user's question:
 
-Please respond in a helpful, conversational manner while maintaining context from our discussion.`;
-    }
+"${message}"`;
 
     const response = await ai.models.generateContent({
       model: "gemini-2.0-flash",
-      contents: contextPrompt,
+      contents: prompt,
     });
 
-    return response.text || "I'm sorry, I'm having trouble responding right now. Could you please try asking again?";
+    return response.text?.trim() || "Sorry, I couldn’t respond. Try again.";
   } catch (error) {
-    console.error("Error in Sakhi chat:", error);
-    throw new Error("I'm experiencing some technical difficulties. Please try again in a moment.");
+    console.error("chatWithSakhi error:", error);
+    throw new Error("Something went wrong with Sakhi’s response.");
+  }
+}
+
+// ---------------- Find Nearby Hospitals (AI-generated fallback) ----------------
+
+export async function findNearbyHospitals(
+  latitude: number,
+  longitude: number
+): Promise<Hospital[]> {
+  try {
+    const prompt = `Given location (${latitude}, ${longitude}), list 5–10 nearby hospitals or clinics in this JSON format:
+
+[
+  {
+    "name": "Hospital Name",
+    "address": "Full address",
+    "phone": "Phone number (if known)",
+    "distance": "Approximate distance",
+    "type": "Hospital/Clinic/Emergency Center"
+  }
+]
+
+Return only valid data based on the coordinates.`;
+
+    const response = await ai.models.generateContent({
+      model: "gemini-2.0-flash",
+      config: { responseMimeType: "application/json" },
+      contents: prompt,
+    });
+
+    const data = response.text?.trim();
+    if (!data) throw new Error("Empty response from Gemini");
+
+    const hospitals = JSON.parse(data);
+    return Array.isArray(hospitals) ? hospitals.slice(0, 10) : [];
+  } catch (error) {
+    console.error("findNearbyHospitals error:", error);
+    throw new Error("Could not retrieve hospitals. Please try again later.");
   }
 }

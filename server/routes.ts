@@ -1,6 +1,6 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
-import { analyzeVitals, recommendActivities, chatWithSakhi, type VitalsData, type MoodData } from "./services/gemini";
+import { analyzeVitals, recommendActivities, chatWithSakhi, findNearbyHospitals, type VitalsData, type MoodData } from "./services/gemini";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Vitals analysis endpoint
@@ -81,6 +81,39 @@ export async function registerRoutes(app: Express): Promise<Server> {
       console.error("Sakhi chat error:", error);
       res.status(500).json({ 
         message: error instanceof Error ? error.message : "Failed to get response from Sakhi" 
+      });
+    }
+  });
+
+  // Nearby hospitals endpoint
+  app.post("/api/hospitals/nearby", async (req, res) => {
+    try {
+      const { latitude, longitude } = req.body;
+      
+      if (!latitude || !longitude || typeof latitude !== 'number' || typeof longitude !== 'number') {
+        return res.status(400).json({ 
+          message: "Please provide valid latitude and longitude coordinates" 
+        });
+      }
+
+      // Basic coordinate validation
+      if (latitude < -90 || latitude > 90 || longitude < -180 || longitude > 180) {
+        return res.status(400).json({ 
+          message: "Invalid coordinates provided" 
+        });
+      }
+
+      const hospitals = await findNearbyHospitals(latitude, longitude);
+      
+      res.json({ 
+        coordinates: { latitude, longitude },
+        hospitals,
+        timestamp: new Date().toISOString()
+      });
+    } catch (error) {
+      console.error("Nearby hospitals error:", error);
+      res.status(500).json({ 
+        message: error instanceof Error ? error.message : "Failed to find nearby hospitals" 
       });
     }
   });
